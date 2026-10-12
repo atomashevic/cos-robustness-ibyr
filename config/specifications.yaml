@@ -1,0 +1,86 @@
+# Bounded multiverse for IBYR.
+# Exactly one option per dimension is the original (orig_ prefix).
+# The combination of all orig_ options is the baseline specification.
+# Frozen after OSF registration (see CLAUDE.md, rule 6; R/06_fit_spec.R is frozen with it).
+
+paper_id: IBYR
+
+# Model fitting is blocked until the plan is registered (COS guidance 1.1:
+# the plan is written before anything is run). Set registered: true and the
+# OSF link only after the editor approves and the OSF registration exists.
+registration:
+  registered: false
+  osf_url: ""
+focal_term: "att_cwc:democracy"
+outcome: life_satisfaction
+
+settings:
+  seed: 20261012
+  n_imputations: 20
+  imputation_maxit: 10
+  imputation_method: mice_defaults   # pmm numeric, logreg binary, polyreg nominal; country as predictor
+  estimation: ML          # Stata mixed default
+  re_covariance: independent   # Stata mixed default; lme4 `||`
+  optimizer: bobyqa
+
+dimensions:
+
+  d04:
+    name: Democracy measure
+    options:
+      orig_vdem2020:
+        description: V-Dem Electoral Democracy Index (v2x_polyarchy), year 2020, V-Dem v11.1.
+      alt_vdem_fieldwork:
+        description: V-Dem Electoral Democracy Index for each country's fieldwork year (2017 to 2021), V-Dem v11.1.
+        rationale: EVS fieldwork began in 2017, so the 2020 score can postdate the survey by three years.
+      alt_eiu_fieldwork:
+        description: EIU Democracy Index for each country's fieldwork year, divided by 10 to the 0 to 1 range.
+        rationale: The author used the EIU index alongside V-Dem in a companion 78-country study (Prati, 2022a).
+        note: Countries without an EIU score drop out of these specifications; their N is recorded.
+    matching: Fieldwork-year options are matched on each respondent's fieldwork year (S020), so countries with both an EVS and a WVS sample in different years carry two values.
+
+  a01:
+    name: Moderator scale composition
+    options:
+      orig_three_items:
+        description: Strong leader, expert rule and army rule items.
+      alt_two_items:
+        description: Strong leader and army rule items only. Two-indicator CFA with equal loadings.
+        rationale: Omega is .63; rule by experts is often read as technocratic rather than autocratic preference (Kirsch and Welzel, 2019).
+
+  a02:
+    name: Contextual term for the centered moderator
+    options:
+      orig_no_context:
+        description: Cluster-mean centered attitudes; country mean of attitudes not in the model.
+      alt_country_mean:
+        description: Cluster-mean centered attitudes plus the country mean of attitudes as a level-2 predictor.
+        rationale: Standard contextual specification. The focal term stays the within-country product.
+
+  d06:
+    name: Country-level controls
+    options:
+      orig_full:
+        description: GDP per capita PPP, government effectiveness, political stability, control of corruption, income group, region.
+      alt_no_governance:
+        description: GDP per capita PPP, income group, region. The three WGI indicators are dropped.
+        rationale: Governance quality is partly a consequence of democracy; the full set spends about 13 parameters on 78 countries.
+
+  d02:
+    name: Missing data
+    options:
+      orig_mi:
+        description: Multiple imputation (settings.n_imputations datasets, mice default methods, country as predictor), estimates pooled with Rubin's rules.
+      alt_complete_case:
+        description: Listwise deletion on all analysis variables.
+        rationale: Standard alternative with item missingness below 3%; also the author's own check.
+
+excluded_combinations: []   # none: every combination is defined
+
+not_varied:
+  d01: {status: set_aside, reason: "All respondents in the 78 countries matched to V-Dem; dropping territories or partially merged countries is less consequential than the five varied."}
+  d03: {status: not_applicable, reason: "Single, directly recorded 1 to 10 item with no construction step."}
+  d05: {status: not_applicable, reason: "No analyst-made cutpoints described; income group and region are source categories. Confirm whether age entered in bands."}
+  d07: {status: set_aside, reason: "Ordinal mixed model is defensible, but linear models are standard for this outcome and keep the interaction on the reported scale."}
+  d08: {status: set_aside, reason: "Random slope already modelled; unstructured random-effects covariance is a smaller variation."}
+  d09: {status: set_aside, reason: "Design weights exist but are unused in the article; they adjust within-country composition while the focal term rests on between-country variation in democracy."}

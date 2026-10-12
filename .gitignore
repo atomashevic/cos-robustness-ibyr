@@ -1,0 +1,28 @@
+# Data: never commit raw or derived microdata
+data/raw/*
+data/external/*
+data/derived/*
+!data/raw/.gitkeep
+!data/external/.gitkeep
+!data/derived/.gitkeep
+
+# Large intermediate model objects
+results/fits/
+*.rds
+*.RData
+*.rda
+
+# R
+.Rhistory
+.Rproj.user/
+.Rapp.history
+
+# OS and editors
+.DS_Store
+*.swp
+.vscode/
+.cursor/
+
+# Local notes and article PDFs (copyrighted)
+*.pdf
+scratch/

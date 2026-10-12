@@ -1,0 +1,65 @@
+# Variable mapping for the Joint EVS/WVS 2017-2021 file (GESIS ZA7505, v2.0.0)
+# and country-level sources.
+#
+# Every entry is UNVERIFIED (verified: false) until checked against the codebook.
+# When you verify an entry, set verified: true and fill `source` with the codebook
+# document and page or variable label. Do not take names from memory (CLAUDE.md, rule 2).
+#
+# Missing-value codes in the joint file are negative (-1 don't know, -2 no answer,
+# -4 not asked, -5 missing). Verify this list in the codebook too.
+
+individual:
+  country_id:        {var: cntry,    verified: false, source: "", note: "ISO 3166-1 numeric country code"}
+  country_iso2:      {var: cntry_AN, verified: false, source: ""}
+  study:             {var: study,    verified: false, source: "", note: "EVS or WVS component"}
+  year:              {var: S020,     verified: false, source: "", note: "fieldwork year, needed for d04 alternatives"}
+  respondent_id:     {var: S007,     verified: false, source: ""}
+
+  life_satisfaction: {var: A170, verified: false, source: "", coding: "1 completely dissatisfied to 10 completely satisfied"}
+
+  regime_strong_leader: {var: E114, verified: false, source: "", coding: "1 very good to 4 very bad; reverse so higher = more anti-democratic"}
+  regime_experts:       {var: E115, verified: false, source: "", coding: "as above"}
+  regime_army:          {var: E116, verified: false, source: "", coding: "as above"}
+  regime_democratic:    {var: E117, verified: false, source: "", note: "not used in the article's scale; kept for descriptives only"}
+
+  sex:            {var: X001,     verified: false, source: ""}
+  age:            {var: X003,     verified: false, source: ""}
+  education:      {var: X025A_01, verified: false, source: "", note: "check which education variable is harmonised across EVS and WVS in the joint file; X025R (3 levels) is the fallback"}
+  marital_status: {var: X007,     verified: false, source: ""}
+  employment:     {var: X028,     verified: false, source: ""}
+
+  weight_design:  {var: gwght, verified: false, source: "", note: "not used (d09 set aside)"}
+
+country:
+  democracy_vdem:
+    source: "V-Dem Country-Year dataset v11.1, doi 10.23696/vdemds21"
+    var: v2x_polyarchy
+    verified: false
+  democracy_eiu:
+    source: "EIU Democracy Index (via Our World in Data or Gapminder; record exact file and access date)"
+    var: ""
+    verified: false
+  gdp_pc_ppp:
+    source: "World Bank WDI NY.GDP.PCAP.PP.KD or NY.GDP.PCAP.PP.CD (decide and record; article does not say constant or current)"
+    var: ""
+    verified: false
+  government_effectiveness:
+    source: "World Bank WGI, Government Effectiveness estimate (GE.EST)"
+    var: GE.EST
+    verified: false
+  political_stability:
+    source: "World Bank WGI, Political Stability and Absence of Violence estimate (PV.EST)"
+    var: PV.EST
+    verified: false
+  control_of_corruption:
+    source: "World Bank WGI, Control of Corruption estimate (CC.EST)"
+    var: CC.EST
+    verified: false
+  income_group:
+    source: "World Bank country classification (record the fiscal year used)"
+    var: ""
+    verified: false
+  region:
+    source: "World Bank region classification"
+    var: ""
+    verified: false

@@ -1,0 +1,4 @@
+iso2,iso3,note
+# Manual ISO2 to ISO3 matches where countrycode or V-Dem differ. Fill after inspecting the joint file.
+# Example rows (verify before use; delete this comment block when done):
+# XK,XKX,Kosovo: V-Dem uses XKX
