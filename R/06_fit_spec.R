@@ -17,6 +17,44 @@ INDIVIDUAL_CONTROLS <- c("sex", "age", "education", "marital_status", "employmen
 GOVERNANCE <- c("gov_effectiveness", "pol_stability", "control_corruption")
 FOCAL_TERM <- "att_cwc:democracy"
 
+# V-Dem v11.1 ends in this year. alt_vdem_fieldwork excludes later fieldwork.
+# The number is the spec field, so the code and the declaration stay the same.
+VDEM_FIELDWORK_LAST_YEAR <- local({
+  y <- read_specs()$dimensions$d04$options$alt_vdem_fieldwork$exclude_fieldwork_after
+  if (!is.numeric(y) || length(y) != 1L || !is.finite(y)) {
+    stop("alt_vdem_fieldwork exclude_fieldwork_after must be one year.", call. = FALSE)
+  }
+  as.integer(y)
+})
+
+# Installed lme4 1.1.35.1, lme4:::checkConv: a singular fit stores exactly this
+# string in optinfo$conv$lme4$messages, signals it with message() (the default
+# action is "message"), and returns before the gradient and Hessian checks.
+# A normal bobyqa exit keeps optimizer code 0. The string is not non-convergence.
+SINGULAR_MSG <- "boundary (singular) fit: see help('isSingular')"
+
+is_singular_notice <- function(msg) {
+  is.character(msg) && length(msg) == 1L && !is.na(msg) && identical(trimws(msg), SINGULAR_MSG)
+}
+
+# Empty character vector means the fit converged. The singular notice is
+# removed. Any other lme4 message, a warning that reports convergence trouble,
+# or an optimizer code other than 0, is a failure.
+convergence_failure <- function(fit, warns = character(0)) {
+  msgs <- fit@optinfo$conv$lme4$messages
+  if (is.null(msgs)) msgs <- character(0)
+  msgs <- as.character(unlist(msgs, use.names = FALSE))
+  msgs <- msgs[!vapply(msgs, is_singular_notice, logical(1))]
+  warn_hit <- grep("converge", warns, value = TRUE, ignore.case = TRUE)
+  warn_hit <- warn_hit[!vapply(warn_hit, is_singular_notice, logical(1))]
+  opt_code <- fit@optinfo$conv$opt
+  opt_fail <- if (is.numeric(opt_code) && length(opt_code) == 1L &&
+                  !is.na(opt_code) && opt_code != 0) {
+    sprintf("optimizer convergence code %s", opt_code)
+  } else character(0)
+  unique(c(opt_fail, msgs, warn_hit))
+}
+
 # One-factor CFA on complete item data; returns regression factor scores and omega.
 # Two items: loadings constrained equal so the model is identified.
 score_attitudes <- function(df, items, equal_loadings = length(items) == 2) {
@@ -41,7 +79,19 @@ spec_vars <- function(spec) {
 }
 
 # Build the model frame for one dataset (one imputation, or the observed data).
+# Drop respondents interviewed after V-Dem v11.1 ends. This is the declared
+# exclusion for alt_vdem_fieldwork, not a silent complete.cases drop. Other
+# options keep those respondents. A missing year is left for complete.cases.
+exclude_late_fieldwork <- function(df, spec, last_year = VDEM_FIELDWORK_LAST_YEAR) {
+  if (identical(spec$d04, "alt_vdem_fieldwork") && "year" %in% names(df)) {
+    late <- !is.na(df$year) & df$year > last_year
+    df <- df[!late, , drop = FALSE]
+  }
+  df
+}
+
 prepare_spec_data <- function(df, spec) {
+  df <- exclude_late_fieldwork(df, spec)
   needed <- spec_vars(spec)
   dat <- df[stats::complete.cases(df[, needed]), needed]
   dat$country   <- droplevels(dat$country)
@@ -63,7 +113,8 @@ spec_formula <- function(spec) {
                           "+ (1 + att_cwc || country)"))
 }
 
-# Fit one model; never return estimates from a fit that did not converge.
+# Fit one model. A singular fit keeps its estimate. An error or an optimizer
+# failure returns no estimate.
 fit_one <- function(dat, spec, settings) {
   warns <- character(0)
   fit <- withCallingHandlers(
@@ -72,11 +123,14 @@ fit_one <- function(dat, spec, settings) {
                  control = lme4::lmerControl(optimizer = settings$optimizer %||% "bobyqa")),
       error = function(e) e
     ),
-    warning = function(w) { warns <<- c(warns, conditionMessage(w)); invokeRestart("muffleWarning") }
+    warning = function(w) { warns <<- c(warns, conditionMessage(w)); invokeRestart("muffleWarning") },
+    message = function(m) {
+      if (is_singular_notice(conditionMessage(m))) invokeRestart("muffleMessage")
+    }
   )
   if (inherits(fit, "error")) return(list(ok = FALSE, reason = paste("error:", conditionMessage(fit))))
-  conv_msgs <- c(fit@optinfo$conv$lme4$messages, grep("converge", warns, value = TRUE, ignore.case = TRUE))
-  if (length(conv_msgs)) return(list(ok = FALSE, reason = paste("non-convergence:", paste(unique(conv_msgs), collapse = "; "))))
+  conv_msgs <- convergence_failure(fit, warns)
+  if (length(conv_msgs)) return(list(ok = FALSE, reason = paste("non-convergence:", paste(conv_msgs, collapse = "; "))))
   if (!FOCAL_TERM %in% names(lme4::fixef(fit))) return(list(ok = FALSE, reason = paste("focal term", FOCAL_TERM, "absent")))
 
   b  <- unname(lme4::fixef(fit)[FOCAL_TERM])
@@ -86,7 +140,8 @@ fit_one <- function(dat, spec, settings) {
     ok = TRUE, estimate = b, std_error = se,
     effect_size = b * stats::sd(dat$att_cwc) * stats::sd(dem_country) / stats::sd(dat$life_satisfaction),
     n_obs = stats::nobs(fit), n_groups = unname(lme4::ngrps(fit)["country"]),
-    singular = lme4::isSingular(fit), warnings = setdiff(warns, conv_msgs)
+    singular = isTRUE(lme4::isSingular(fit)),
+    warnings = warns[!vapply(warns, is_singular_notice, logical(1))]
   )
 }
 
@@ -109,6 +164,9 @@ run_spec <- function(spec, analytic, imp, settings) {
       d <- cbind(mice::complete(imp, i), analytic[, country_cols, drop = FALSE])
       fit_one(prepare_spec_data(d, spec), spec, settings)
     })
+    # A singular imputation has ok TRUE and an estimate, so it is pooled.
+    # One singular imputation does not fail the specification. An error or
+    # an optimizer failure has ok FALSE, and then the row has no estimate.
     ok <- vapply(fits, `[[`, logical(1), "ok")
     row$n_imputations <- imp$m
     if (!all(ok)) {
