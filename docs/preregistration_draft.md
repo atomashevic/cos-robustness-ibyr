@@ -32,7 +32,7 @@ Follows the COS preregistration template section by section. Copy into the COS d
 | d02 | Missing data handling | Varied | |
 | d03 | Outcome operationalization | Not applicable | The outcome is a single, directly recorded 1 to 10 item with no construction step. |
 | d04 | Focal predictor operationalization | Varied | |
-| d05 | Categorization and thresholding | Not applicable | No continuous variable is cut by the analyst. Income group and region are categories supplied by the source. TODO: confirm age enters as continuous. |
+| d05 | Categorization and thresholding | Set aside | Age, GDP per capita, the governance indicators, the democracy index and the attitude score are continuous, so cutpoints were open, but categorizing them is judged less consequential than the five varied decisions. |
 | d06 | Covariate set | Varied | |
 | d07 | Estimator and functional form | Set aside | An ordinal mixed model is defensible for a 10-point item, but linear models are standard for this outcome and keep the interaction on the reported scale. |
 | d08 | Clustering, nesting, and standard errors | Set aside | The article already models slope variance across countries, which addresses the main standard-error concern for a cross-level interaction. An unstructured random-effects covariance is a smaller variation. |
@@ -50,7 +50,7 @@ Follows the COS preregistration template section by section. Copy into the COS d
 | Option | Original? | What it does | Why it is a reasonable choice for this question |
 | --- | --- | --- | --- |
 | orig_vdem2020 | Yes | V-Dem Electoral Democracy Index for 2020 for every country. | |
-| alt_vdem_fieldwork | No | V-Dem Electoral Democracy Index for the year of each country's fieldwork (2017 to 2021). | Fieldwork spans five years. Matching the index to the survey year measures the regime respondents lived under when interviewed. |
+| alt_vdem_fieldwork | No | V-Dem Electoral Democracy Index for each respondent's fieldwork year, V-Dem v11.1. Respondents whose fieldwork year (S020) is after 2020 are excluded from these specifications, because V-Dem v11.1 ends in 2020 and supplies no later value. They remain in every other specification. The countries are named at data preparation. | Fieldwork spans five years. Matching the index to the survey year measures the regime respondents lived under when interviewed. |
 | alt_eiu_fieldwork | No | EIU Democracy Index for each country's fieldwork year, divided by 10. Countries without an EIU score are dropped from these specifications. | The EIU index is a standard alternative measure of the same construct, and the author used it alongside V-Dem in Prati (2022a). |
 
 ### a01: Anti-democratic attitudes scale composition
@@ -100,6 +100,7 @@ Follows the COS preregistration template section by section. Copy into the COS d
 
 - Decisions the article leaves open, with the baseline reading for each, are listed in `docs/focal_result.md` ("Decisions the article leaves open"). TODO: paste the table here.
 - Estimation uses maximum likelihood and an independent random-effects covariance, matching Stata `mixed` defaults.
-- A specification counts as failed if the model fails to converge in any imputed dataset; it is recorded without an estimate.
+- A boundary (singular) fit is converged. In lme4, checkConv stores the message "boundary (singular) fit: see help('isSingular')" and returns before the gradient and Hessian checks, so that message is not an optimizer failure. The estimate is kept and singular is set to TRUE. One singular imputation does not fail the specification. Optimizer failure, including failure in any imputed dataset, sets converged to FALSE and the row has no estimate.
+- For alt_vdem_fieldwork, respondents with a fieldwork year after 2020 are a declared exclusion. R/04_build_analytic.R writes those countries to results/descriptives_vdem_fieldwork_exclusion.csv. The joint file is not in data/raw yet, so that list is filled at data preparation.
 - The robustness paragraph (p. 2613) reports a second complete-case estimate labelled life satisfaction that matches the happiness model; this looks like a typo and does not affect the focal result.
 - No model was fitted before this plan was written. Before submission, only data preparation and descriptives were run (sample size, number of countries, item missingness, scale reliability). TODO: report those descriptives here, next to the article's N = 131,846 and 78 countries.

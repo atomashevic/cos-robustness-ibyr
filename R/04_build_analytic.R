@@ -27,6 +27,10 @@ fixed_2020 <- cy |>
   filter(year == 2020) |>
   transmute(iso3, dem_vdem2020 = vdem_edi, gdp_pc_ppp, gov_effectiveness,
             pol_stability, control_corruption, income_group, region)
+# A fieldwork year after V-Dem v11.1 (see exclude_fieldwork_after) does not
+# match a V-Dem row, so dem_vdem_fieldwork is missing. That missingness is
+# not the exclusion. prepare_spec_data() drops those respondents only for
+# alt_vdem_fieldwork. They stay in this file and in the other options.
 at_fieldwork <- cy |>
   transmute(iso3, year, dem_vdem_fieldwork = vdem_edi, dem_eiu_fieldwork = eiu_edi)
 
@@ -47,6 +51,18 @@ saveRDS(analytic, file.path(paths$derived, "analytic.rds"))
 
 # Descriptives for the preregistration
 ensure_dir(paths$results)
+
+# Countries with fieldwork after the last V-Dem v11.1 year. Counts only.
+# The respondents stay in analytic.rds; the option excludes them at fit time.
+vdem_last <- read_specs()$dimensions$d04$options$alt_vdem_fieldwork$exclude_fieldwork_after
+late <- analytic |>
+  filter(!is.na(year), year > vdem_last) |>
+  count(country_iso2, country, year, name = "n_respondents") |>
+  arrange(country_iso2, year)
+write.csv(late, file.path(paths$results, "descriptives_vdem_fieldwork_exclusion.csv"), row.names = FALSE)
+cat("Countries with fieldwork after ", vdem_last, ": ",
+    if (nrow(late)) paste(unique(as.character(late$country_iso2)), collapse = ", ") else "none",
+    "\n", sep = "")
 n_tab <- data.frame(
   quantity  = c("respondents", "countries", "countries dropped (no V-Dem 2020)", "respondents in article", "countries in article"),
   value     = c(nrow(analytic), nlevels(analytic$country), nrow(dropped), 131846, 78)

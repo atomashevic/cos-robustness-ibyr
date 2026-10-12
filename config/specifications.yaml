@@ -31,8 +31,10 @@ dimensions:
       orig_vdem2020:
         description: V-Dem Electoral Democracy Index (v2x_polyarchy), year 2020, V-Dem v11.1.
       alt_vdem_fieldwork:
-        description: V-Dem Electoral Democracy Index for each country's fieldwork year (2017 to 2021), V-Dem v11.1.
+        description: V-Dem Electoral Democracy Index (v2x_polyarchy) for each respondent's fieldwork year, V-Dem v11.1.
         rationale: EVS fieldwork began in 2017, so the 2020 score can postdate the survey by three years.
+        exclusion: Respondents whose fieldwork year (S020) is after 2020 are excluded from these specifications, because V-Dem v11.1 ends in 2020 and supplies no later value. They remain in every other specification. The countries are named at data preparation.
+        exclude_fieldwork_after: 2020
       alt_eiu_fieldwork:
         description: EIU Democracy Index for each country's fieldwork year, divided by 10 to the 0 to 1 range.
         rationale: The author used the EIU index alongside V-Dem in a companion 78-country study (Prati, 2022a).
@@ -80,7 +82,7 @@ excluded_combinations: []   # none: every combination is defined
 not_varied:
   d01: {status: set_aside, reason: "All respondents in the 78 countries matched to V-Dem; dropping territories or partially merged countries is less consequential than the five varied."}
   d03: {status: not_applicable, reason: "Single, directly recorded 1 to 10 item with no construction step."}
-  d05: {status: not_applicable, reason: "No analyst-made cutpoints described; income group and region are source categories. Confirm whether age entered in bands."}
+  d05: {status: set_aside, reason: "Age, GDP per capita, the governance indicators, the democracy index and the attitude score are continuous, so cutpoints were open, but categorizing them is judged less consequential than the five varied decisions."}
   d07: {status: set_aside, reason: "Ordinal mixed model is defensible, but linear models are standard for this outcome and keep the interaction on the reported scale."}
   d08: {status: set_aside, reason: "Random slope already modelled; unstructured random-effects covariance is a smaller variation."}
   d09: {status: set_aside, reason: "Design weights exist but are unused in the article; they adjust within-country composition while the focal term rests on between-country variation in democracy."}

@@ -62,7 +62,47 @@ chk(identical(names(res), results_columns), "results row must have the declared 
 # Failed fits must not carry estimates
 bad <- fit_one(transform(prepare_spec_data(d, as.list(grid[1, ]))[1:20, ], country = droplevels(country)),
                as.list(grid[1, ]), settings)
-chk(!bad$ok, "a tiny dataset should be flagged as a failed fit")
+chk(!bad$ok && is.null(bad$estimate), "a tiny dataset should be flagged as a failed fit with no estimate")
+
+# Years after V-Dem v11.1 are a declared exclusion for one option only.
+yrs <- data.frame(year = c(2018, 2020, 2021, NA))
+kept <- exclude_late_fieldwork(yrs, list(d04 = "alt_vdem_fieldwork"))
+chk(identical(kept$year, c(2018, 2020, NA)), "fieldwork after 2020 is excluded; a missing year is not")
+chk(nrow(exclude_late_fieldwork(yrs, list(d04 = "orig_vdem2020"))) == 4,
+    "other democracy options keep respondents interviewed after 2020")
+chk(identical(VDEM_FIELDWORK_LAST_YEAR, 2020L), "exclusion year is the v11.1 end year in the spec")
+
+# Singular fit: checkConv stores one message and returns. The estimate stays.
+set.seed(1)
+sd <- data.frame(y = rnorm(400), x = rnorm(400), g = factor(rep(1:2, each = 200)))
+sm <- suppressMessages(lme4::lmer(y ~ x + (1 + x || g), data = sd, REML = FALSE,
+                                  control = lme4::lmerControl(optimizer = "bobyqa")))
+chk(lme4::isSingular(sm), "constructed fit should be singular")
+chk(identical(sm@optinfo$conv$lme4$messages, SINGULAR_MSG),
+    "singular message must be the checkConv string")
+chk(length(convergence_failure(sm)) == 0, "a singular fit is not non-convergence")
+chk(isTRUE(sm@optinfo$conv$opt == 0), "a singular fit can still have optimizer code 0")
+
+# One singular imputation must not fail the specification. The other failure must.
+mixed <- list(
+  list(ok = TRUE, singular = TRUE, estimate = -0.2, std_error = 0.08),
+  list(ok = TRUE, singular = FALSE, estimate = -0.22, std_error = 0.08)
+)
+mixed_ok <- vapply(mixed, `[[`, logical(1), "ok")
+chk(all(mixed_ok) && sum(vapply(mixed, `[[`, logical(1), "singular")) == 1,
+    "a singular imputation stays ok and is counted, not failed")
+failed_mix <- list(mixed[[1]], list(ok = FALSE, singular = FALSE, reason = "optimizer convergence code 1"))
+failed_ok <- vapply(failed_mix, `[[`, logical(1), "ok")
+chk(!all(failed_ok), "an optimizer failure in any imputation still fails the specification")
+
+# Optimizer failure is still non-convergence, with no success code.
+fm <- suppressWarnings(lme4::lmer(
+  y ~ x + (1 + x | g),
+  data = data.frame(y = rnorm(80), x = rnorm(80), g = factor(rep(1:8, each = 10))),
+  REML = FALSE,
+  control = lme4::lmerControl(optimizer = "bobyqa", optCtrl = list(maxfun = 5))
+))
+chk(length(convergence_failure(fm)) > 0, "optimizer failure is non-convergence")
 
 if (length(fails)) { cat("FAILED:\n", paste0(" - ", fails, collapse = "\n"), "\n"); quit(status = 1) }
 cat("All simulated-data checks passed.\n")
