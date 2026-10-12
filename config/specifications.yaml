@@ -31,15 +31,14 @@ dimensions:
       orig_vdem2020:
         description: V-Dem Electoral Democracy Index (v2x_polyarchy), year 2020, V-Dem v11.1.
       alt_vdem_fieldwork:
-        description: V-Dem Electoral Democracy Index (v2x_polyarchy) for each respondent's fieldwork year, V-Dem v11.1.
-        rationale: EVS fieldwork began in 2017, so the 2020 score can postdate the survey by three years.
-        exclusion: Respondents whose fieldwork year (S020) is after 2020 are excluded from these specifications, because V-Dem v11.1 ends in 2020 and supplies no later value. They remain in every other specification. The countries are named at data preparation.
-        exclude_fieldwork_after: 2020
-      alt_eiu_fieldwork:
-        description: EIU Democracy Index for each country's fieldwork year, divided by 10 to the 0 to 1 range.
-        rationale: The author used the EIU index alongside V-Dem in a companion 78-country study (Prati, 2022a).
-        note: Countries without an EIU score drop out of these specifications; their N is recorded.
-    matching: Fieldwork-year options are matched on each respondent's fieldwork year (S020), so countries with both an EVS and a WVS sample in different years carry two values.
+        description: V-Dem Electoral Democracy Index (v2x_polyarchy) for each respondent's fieldwork year (S020), V-Dem v11.1. Version 11.1 ends in 2020, so respondents interviewed in 2021 keep the 2020 score, the latest available value, as under the original option.
+        rationale: EVS fieldwork began in 2017, so a fixed 2020 score can postdate the interview by up to three years.
+        vdem_last_year: 2020
+      alt_vdem_libdem2020:
+        description: V-Dem Liberal Democracy Index (v2x_libdem), year 2020, V-Dem v11.1.
+        rationale: Same source and release as the original, full coverage of the file, and the broader construct (electoral democracy plus liberal constraints on the executive) that much of the democracy and well-being literature means by democracy.
+    matching: The fieldwork-year option is matched on each respondent's fieldwork year (S020), so countries with both an EVS and a WVS sample in different years carry two values.
+    note: An EIU Democracy Index option was considered and dropped because it does not cover every country in the file.
 
   a01:
     name: Moderator scale composition

@@ -51,10 +51,9 @@ Expected: 48 specifications, baseline `IBYR_01`, "All 13 checks passed", and "Al
 | --- | --- |
 | Joint EVS/WVS 2017 to 2021, ZA7505 **v2.0.0** (.dta or .sav) and its codebook / variable report | `data/raw/` |
 | V-Dem Country-Year **v11.1** | `data/external/vdem/` |
-| EIU Democracy Index, 2017 to 2021 | `data/external/eiu/` |
 | World Bank: GDP per capita PPP, WGI (GE, PV, CC), income groups and regions | `data/external/worldbank/` |
 
-Use the versions in bold; the COS guidance asks for the vintage the author used. Public sources (V-Dem archive, World Bank, Our World in Data for EIU) you may download if your environment allows it. Record file name, version, URL and access date for every source in `docs/data_sources.md`.
+Use the versions in bold; the COS guidance asks for the vintage the author used. Public sources (V-Dem archive, World Bank) you may download if your environment allows it. Record file name, version, URL and access date for every source in `docs/data_sources.md`.
 
 If the joint file is absent, do steps 3, 5 (from the codebook alone, if it is present) and 8, then stop and report the missing prerequisite. Do not substitute a different release or a different survey file and call the step done.
 
@@ -75,7 +74,7 @@ Country-level entries: fill the variable names from the downloaded files. For GD
 
 ## 6. Adapt the preparation scripts to the real files
 
-`R/02_prepare_individual.R` should run once the mapping is verified. `R/03_prepare_country.R` assumes column names (`iso3`, `year`, `eiu_index`, `gdp_pc_ppp`, `GE.EST`, ...) that the downloaded files will not have. Adapt the reading code to the real formats. Do not change what the variables mean.
+`R/02_prepare_individual.R` should run once the mapping is verified. `R/03_prepare_country.R` assumes column names (`iso3`, `year`, `gdp_pc_ppp`, `GE.EST`, ...) that the downloaded files will not have. Adapt the reading code to the real formats. Do not change what the variables mean.
 
 Fill `config/country_overrides.csv` for any ISO2 to ISO3 mismatch (V-Dem uses `XKX` for Kosovo, for example). Then run:
 

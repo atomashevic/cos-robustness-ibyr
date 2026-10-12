@@ -37,7 +37,7 @@ Five decisions are varied (3 × 2 × 2 × 2 × 2 = 48 specifications). Definitio
 
 | Code | Decision | Options |
 | --- | --- | --- |
-| d04 | Democracy measure | V-Dem EDI 2020 (orig) · V-Dem EDI at fieldwork year · EIU index at fieldwork year |
+| d04 | Democracy measure | V-Dem EDI 2020 (orig) · V-Dem EDI at fieldwork year (2021 keeps 2020) · V-Dem LDI 2020 |
 | a01 | Moderator scale items | strong leader + experts + army (orig) · strong leader + army |
 | a02 | Contextual term | cluster-mean centered attitudes only (orig) · plus country mean at level 2 |
 | d06 | Country controls | full set (orig) · without the three governance indicators |

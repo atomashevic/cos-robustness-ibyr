@@ -25,14 +25,12 @@ if (length(unmatched)) cat("No ISO3 code for:", paste(unmatched, collapse = ", "
 # Country-level variables
 fixed_2020 <- cy |>
   filter(year == 2020) |>
-  transmute(iso3, dem_vdem2020 = vdem_edi, gdp_pc_ppp, gov_effectiveness,
+  transmute(iso3, dem_vdem2020 = vdem_edi, dem_vdem_libdem2020 = vdem_libdem, gdp_pc_ppp, gov_effectiveness,
             pol_stability, control_corruption, income_group, region)
-# A fieldwork year after V-Dem v11.1 (see exclude_fieldwork_after) does not
-# match a V-Dem row, so dem_vdem_fieldwork is missing. That missingness is
-# not the exclusion. prepare_spec_data() drops those respondents only for
-# alt_vdem_fieldwork. They stay in this file and in the other options.
+# Fieldwork after V-Dem v11.1 ends (2020) carries the 2020 score forward,
+# flagged by vdem_carried_forward (see R/03_prepare_country.R).
 at_fieldwork <- cy |>
-  transmute(iso3, year, dem_vdem_fieldwork = vdem_edi, dem_eiu_fieldwork = eiu_edi)
+  transmute(iso3, year, dem_vdem_fieldwork = vdem_edi, vdem_carried_forward)
 
 analytic_all <- ind |>
   left_join(fixed_2020, by = "iso3") |>
@@ -52,15 +50,14 @@ saveRDS(analytic, file.path(paths$derived, "analytic.rds"))
 # Descriptives for the preregistration
 ensure_dir(paths$results)
 
-# Countries with fieldwork after the last V-Dem v11.1 year. Counts only.
-# The respondents stay in analytic.rds; the option excludes them at fit time.
-vdem_last <- read_specs()$dimensions$d04$options$alt_vdem_fieldwork$exclude_fieldwork_after
+# Countries with fieldwork after the last V-Dem v11.1 year: under alt_vdem_fieldwork
+# these respondents carry the 2020 score forward. Counts only.
 late <- analytic |>
-  filter(!is.na(year), year > vdem_last) |>
+  filter(vdem_carried_forward %in% TRUE) |>
   count(country_iso2, country, year, name = "n_respondents") |>
   arrange(country_iso2, year)
-write.csv(late, file.path(paths$results, "descriptives_vdem_fieldwork_exclusion.csv"), row.names = FALSE)
-cat("Countries with fieldwork after ", vdem_last, ": ",
+write.csv(late, file.path(paths$results, "descriptives_vdem_carried_forward.csv"), row.names = FALSE)
+cat("Country-years with the 2020 V-Dem score carried forward: ",
     if (nrow(late)) paste(unique(as.character(late$country_iso2)), collapse = ", ") else "none",
     "\n", sep = "")
 n_tab <- data.frame(
@@ -73,7 +70,7 @@ if (nrow(dropped)) cat("Dropped countries:", paste(dropped$country_iso2, collaps
 
 analysis_vars <- c("life_satisfaction", "regime_strong_leader", "regime_experts", "regime_army",
                    "sex", "age", "education", "marital_status", "employment",
-                   "dem_vdem2020", "dem_vdem_fieldwork", "dem_eiu_fieldwork", "gdp_pc_ppp",
+                   "dem_vdem2020", "dem_vdem_fieldwork", "dem_vdem_libdem2020", "gdp_pc_ppp",
                    "gov_effectiveness", "pol_stability", "control_corruption", "income_group", "region")
 miss <- data.frame(
   variable    = analysis_vars,

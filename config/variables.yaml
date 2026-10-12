@@ -35,9 +35,9 @@ country:
     source: "V-Dem Country-Year dataset v11.1, doi 10.23696/vdemds21"
     var: v2x_polyarchy
     verified: false
-  democracy_eiu:
-    source: "EIU Democracy Index (via Our World in Data or Gapminder; record exact file and access date)"
-    var: ""
+  democracy_vdem_liberal:
+    source: "V-Dem Country-Year dataset v11.1, doi 10.23696/vdemds21"
+    var: v2x_libdem
     verified: false
   gdp_pc_ppp:
     source: "World Bank WDI NY.GDP.PCAP.PP.KD or NY.GDP.PCAP.PP.CD (decide and record; article does not say constant or current)"
@@ -52,7 +52,7 @@ country:
     var: PV.EST
     verified: false
   control_of_corruption:
-    source: "World Bank WGI, Control of Corruption estimate (CC.EST)"
+    source: "World Bank WGI, Control of Corruption estimate (CC.EST); the article calls this 'perceptions of corruption'"
     var: CC.EST
     verified: false
   income_group:

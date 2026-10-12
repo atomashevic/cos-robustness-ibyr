@@ -14,11 +14,11 @@ Follows the COS preregistration template section by section. Copy into the COS d
 
 **The analysis that produces it.** Unit: respondents (level 1) nested in countries (level 2); 131,846 respondents in 78 countries surveyed in WVS wave 7 or EVS 2017. Outcome: life satisfaction, single item, 1 to 10. Focal predictor: the product of the V-Dem Electoral Democracy Index 2020 (country level, 0 to 1) and anti-democratic attitudes (three reverse-coded regime items combined into a latent variable, cluster-mean centered). Adjusted for gender, age, education, marital status, employment status, GDP per capita PPP, government effectiveness, political stability, perceptions of corruption, World Bank income group and region. Estimator: linear mixed model with random intercepts and a random slope for attitudes (Stata 17), with multiple imputation of missing data. Uncertainty: model-based standard errors pooled across imputations, 95% confidence intervals. Direction: negative; the democracy slope decreases as anti-democratic attitudes increase.
 
-**The focal estimate.** The fixed-effect coefficient on the product term `att_cwc:democracy`. Under d04 alternatives, `democracy` is the alternative measure; under a01, `att_cwc` is the two-item score; under a02, the country mean of attitudes is an added level-2 term and the focal term is unchanged. No option makes the quantity multi-valued.
+**The focal estimate.** The fixed-effect coefficient on the product term `att_cwc:democracy`. Under d04 alternatives, `democracy` is the fieldwork-year electoral index or the 2020 liberal index; under a01, `att_cwc` is the two-item score; under a02, the country mean of attitudes is an added level-2 term and the focal term is unchanged. No option makes the quantity multi-valued.
 
 ## 2. Data
 
-**Data source.** Joint EVS/WVS 2017 to 2021, GESIS ZA7505 v2.0.0 (doi 10.4232/1.13737), accessed TODO. V-Dem Country-Year v11.1 (doi 10.23696/vdemds21), accessed TODO. World Bank WDI and WGI, release TODO, accessed TODO. EIU Democracy Index (d04 alternative only), file TODO, accessed TODO. ZA7505 v2.0.0 and V-Dem v11.1 are the releases the author cites.
+**Data source.** Joint EVS/WVS 2017 to 2021, GESIS ZA7505 v2.0.0 (doi 10.4232/1.13737), accessed TODO. V-Dem Country-Year v11.1 (doi 10.23696/vdemds21), accessed TODO, supplying both the electoral and the liberal index. World Bank WDI and WGI, release TODO, accessed TODO. ZA7505 v2.0.0 and V-Dem v11.1 are the releases the author cites.
 
 **Author materials.** ☐ Yes ☒ No. No replication code or supplement is available. Only the article was consulted.
 
@@ -50,8 +50,8 @@ Follows the COS preregistration template section by section. Copy into the COS d
 | Option | Original? | What it does | Why it is a reasonable choice for this question |
 | --- | --- | --- | --- |
 | orig_vdem2020 | Yes | V-Dem Electoral Democracy Index for 2020 for every country. | |
-| alt_vdem_fieldwork | No | V-Dem Electoral Democracy Index for each respondent's fieldwork year, V-Dem v11.1. Respondents whose fieldwork year (S020) is after 2020 are excluded from these specifications, because V-Dem v11.1 ends in 2020 and supplies no later value. They remain in every other specification. The countries are named at data preparation. | Fieldwork spans five years. Matching the index to the survey year measures the regime respondents lived under when interviewed. |
-| alt_eiu_fieldwork | No | EIU Democracy Index for each country's fieldwork year, divided by 10. Countries without an EIU score are dropped from these specifications. | The EIU index is a standard alternative measure of the same construct, and the author used it alongside V-Dem in Prati (2022a). |
+| alt_vdem_fieldwork | No | V-Dem Electoral Democracy Index for each respondent's fieldwork year (S020), V-Dem v11.1. Version 11.1 ends in 2020, so respondents interviewed in 2021 keep the 2020 score, the latest available value, as under the original option. The affected country-years are listed in results/descriptives_vdem_carried_forward.csv. | Fieldwork spans five years. Matching the index to the survey year measures the regime respondents lived under when interviewed. |
+| alt_vdem_libdem2020 | No | V-Dem Liberal Democracy Index (v2x_libdem) for 2020, from the same v11.1 release. | Same source and vintage as the original, full coverage of the file, and the broader construct (electoral democracy plus liberal constraints on the executive) that much of the democracy and well-being literature means by democracy. |
 
 ### a01: Anti-democratic attitudes scale composition
 
@@ -101,6 +101,7 @@ Follows the COS preregistration template section by section. Copy into the COS d
 - Decisions the article leaves open, with the baseline reading for each, are listed in `docs/focal_result.md` ("Decisions the article leaves open"). TODO: paste the table here.
 - Estimation uses maximum likelihood and an independent random-effects covariance, matching Stata `mixed` defaults.
 - A boundary (singular) fit is converged. In lme4, checkConv stores the message "boundary (singular) fit: see help('isSingular')" and returns before the gradient and Hessian checks, so that message is not an optimizer failure. The estimate is kept and singular is set to TRUE. One singular imputation does not fail the specification. Optimizer failure, including failure in any imputed dataset, sets converged to FALSE and the row has no estimate.
-- For alt_vdem_fieldwork, respondents with a fieldwork year after 2020 are a declared exclusion. R/04_build_analytic.R writes those countries to results/descriptives_vdem_fieldwork_exclusion.csv. The joint file is not in data/raw yet, so that list is filled at data preparation.
+- For alt_vdem_fieldwork, respondents with 2021 fieldwork keep the 2020 V-Dem score. R/04_build_analytic.R writes the affected country-years to results/descriptives_vdem_carried_forward.csv. The joint file is not in data/raw yet, so that list is filled at data preparation.
+- The article's "perceptions of corruption" is operationalized as the World Bank WGI Control of Corruption estimate.
 - The robustness paragraph (p. 2613) reports a second complete-case estimate labelled life satisfaction that matches the happiness model; this looks like a typo and does not affect the focal result.
 - No model was fitted before this plan was written. Before submission, only data preparation and descriptives were run (sample size, number of countries, item missingness, scale reliability). TODO: report those descriptives here, next to the article's N = 131,846 and 78 countries.

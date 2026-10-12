@@ -13,8 +13,7 @@ countries <- data.frame(
   dem_vdem2020 = runif(n_c, 0.1, 0.9)
 )
 countries$dem_vdem_fieldwork <- pmin(1, pmax(0, countries$dem_vdem2020 + rnorm(n_c, 0, 0.03)))
-countries$dem_eiu_fieldwork  <- pmin(1, pmax(0, countries$dem_vdem2020 + rnorm(n_c, 0, 0.08)))
-countries$dem_eiu_fieldwork[1:3] <- NA          # countries without an EIU score
+countries$dem_vdem_libdem2020 <- pmin(1, pmax(0, countries$dem_vdem2020 - 0.1 + rnorm(n_c, 0, 0.05)))
 countries$gdp_pc_ppp <- exp(rnorm(n_c, 9.5, 0.8))
 countries$gov_effectiveness  <- rnorm(n_c)
 countries$pol_stability      <- rnorm(n_c)
@@ -47,7 +46,7 @@ imp <- mice(d[, imp_vars], m = 3, maxit = 3, method = meth, printFlag = FALSE, s
 
 settings <- list(optimizer = "bobyqa")
 grid <- build_spec_grid(read_specs())
-pick <- c("IBYR_01", grid$spec_id[grid$d04 == "alt_eiu_fieldwork" & grid$d02 == "alt_complete_case" &
+pick <- c("IBYR_01", grid$spec_id[grid$d04 == "alt_vdem_libdem2020" & grid$d02 == "alt_complete_case" &
                                    grid$a01 == "alt_two_items" & grid$a02 == "alt_country_mean"][1])
 res <- do.call(rbind, lapply(pick, function(id) run_spec(as.list(grid[grid$spec_id == id, ]), d, imp, settings)))
 print(res[, c("spec_id", "d04", "a01", "a02", "d06", "d02", "estimate", "std_error", "p_value", "n_obs", "n_groups", "converged")])
@@ -56,7 +55,7 @@ fails <- character(0)
 chk <- function(ok, msg) if (!isTRUE(ok)) fails <<- c(fails, msg)
 chk(all(res$converged), "all test specifications should converge")
 chk(all(res$estimate < 0 & res$p_value < 0.05), "focal interaction should be negative and detected")
-chk(res$n_groups[2] == n_c - 3, "EIU specification should drop the 3 countries without a score")
+chk(res$n_groups[2] == n_c, "liberal democracy specification keeps every country")
 chk(res$n_imputations[1] == 3 && res$statistic_type[1] == "t (Rubin's rules)", "baseline should pool over imputations")
 chk(identical(names(res), results_columns), "results row must have the declared columns")
 # Failed fits must not carry estimates
@@ -64,13 +63,7 @@ bad <- fit_one(transform(prepare_spec_data(d, as.list(grid[1, ]))[1:20, ], count
                as.list(grid[1, ]), settings)
 chk(!bad$ok && is.null(bad$estimate), "a tiny dataset should be flagged as a failed fit with no estimate")
 
-# Years after V-Dem v11.1 are a declared exclusion for one option only.
-yrs <- data.frame(year = c(2018, 2020, 2021, NA))
-kept <- exclude_late_fieldwork(yrs, list(d04 = "alt_vdem_fieldwork"))
-chk(identical(kept$year, c(2018, 2020, NA)), "fieldwork after 2020 is excluded; a missing year is not")
-chk(nrow(exclude_late_fieldwork(yrs, list(d04 = "orig_vdem2020"))) == 4,
-    "other democracy options keep respondents interviewed after 2020")
-chk(identical(VDEM_FIELDWORK_LAST_YEAR, 2020L), "exclusion year is the v11.1 end year in the spec")
+chk(identical(VDEM_LAST_YEAR, 2020L), "last V-Dem year is the v11.1 end year in the spec")
 
 # Singular fit: checkConv stores one message and returns. The estimate stays.
 set.seed(1)

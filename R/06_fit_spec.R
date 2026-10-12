@@ -11,18 +11,18 @@ ITEMS <- list(
 DEMOCRACY <- c(
   orig_vdem2020      = "dem_vdem2020",
   alt_vdem_fieldwork = "dem_vdem_fieldwork",
-  alt_eiu_fieldwork  = "dem_eiu_fieldwork"
+  alt_vdem_libdem2020 = "dem_vdem_libdem2020"
 )
 INDIVIDUAL_CONTROLS <- c("sex", "age", "education", "marital_status", "employment")
 GOVERNANCE <- c("gov_effectiveness", "pol_stability", "control_corruption")
 FOCAL_TERM <- "att_cwc:democracy"
 
-# V-Dem v11.1 ends in this year. alt_vdem_fieldwork excludes later fieldwork.
-# The number is the spec field, so the code and the declaration stay the same.
-VDEM_FIELDWORK_LAST_YEAR <- local({
-  y <- read_specs()$dimensions$d04$options$alt_vdem_fieldwork$exclude_fieldwork_after
+# V-Dem v11.1 ends in this year. For alt_vdem_fieldwork, later fieldwork keeps
+# the score of this year (carried forward in R/03_prepare_country.R). Nobody is excluded.
+VDEM_LAST_YEAR <- local({
+  y <- read_specs()$dimensions$d04$options$alt_vdem_fieldwork$vdem_last_year
   if (!is.numeric(y) || length(y) != 1L || !is.finite(y)) {
-    stop("alt_vdem_fieldwork exclude_fieldwork_after must be one year.", call. = FALSE)
+    stop("alt_vdem_fieldwork vdem_last_year must be one year.", call. = FALSE)
   }
   as.integer(y)
 })
@@ -79,19 +79,7 @@ spec_vars <- function(spec) {
 }
 
 # Build the model frame for one dataset (one imputation, or the observed data).
-# Drop respondents interviewed after V-Dem v11.1 ends. This is the declared
-# exclusion for alt_vdem_fieldwork, not a silent complete.cases drop. Other
-# options keep those respondents. A missing year is left for complete.cases.
-exclude_late_fieldwork <- function(df, spec, last_year = VDEM_FIELDWORK_LAST_YEAR) {
-  if (identical(spec$d04, "alt_vdem_fieldwork") && "year" %in% names(df)) {
-    late <- !is.na(df$year) & df$year > last_year
-    df <- df[!late, , drop = FALSE]
-  }
-  df
-}
-
 prepare_spec_data <- function(df, spec) {
-  df <- exclude_late_fieldwork(df, spec)
   needed <- spec_vars(spec)
   dat <- df[stats::complete.cases(df[, needed]), needed]
   dat$country   <- droplevels(dat$country)
