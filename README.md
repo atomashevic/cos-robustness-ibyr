@@ -82,7 +82,7 @@ The two run scripts refuse to fit models until `registration.registered` is set 
 
 ## Rules
 
-Working rules for this repository (including for AI assistants) are in [`CLAUDE.md`](CLAUDE.md). The short version: raw data never enters git, variable names come from codebooks, no model is fitted before registration, and the plan is frozen once registered.
+Working rules for this repository (including for AI assistants) are in [`CLAUDE.md`](CLAUDE.md). `AGENTS.md` points other agents there. The current task for a coding agent is in [`docs/CURSOR_HANDOFF.md`](docs/CURSOR_HANDOFF.md). The short version: raw data never enters git, variable names come from codebooks, no model is fitted before registration, and the plan is frozen once registered.
 
 ## COS materials
 
