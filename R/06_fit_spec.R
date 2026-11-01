@@ -1,5 +1,5 @@
 # Functions that fit one specification. Sourced by the run scripts.
-# Frozen after registration except for bug fixes (CLAUDE.md, rule 6).
+# Frozen after registration except for bug fixes (README.md, rule 6).
 
 source("R/utils.R")
 suppressPackageStartupMessages({ library(lavaan); library(lme4) })

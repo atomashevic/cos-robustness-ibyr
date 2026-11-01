@@ -1,6 +1,6 @@
-# Robustness Studies: Preregistration (draft)
+# Robustness Studies: Preregistration
 
-Follows the COS preregistration template section by section. Copy into the COS document once the proposal is accepted. Items marked TODO need the data or a decision.
+Follows the COS preregistration template section by section. This is the text of the preregistration sent to COS for review; it is not registered yet.
 
 ## 1. Paper, analyst, and focal result
 
@@ -8,7 +8,7 @@ Follows the COS preregistration template section by section. Copy into the COS d
 | --- | --- |
 | Analyst | Aleksandar Tomašević, Institute of Physics Belgrade |
 | Paper ID | IBYR |
-| Date | TODO |
+| Date | 1 November 2026 |
 
 **The focal result.** Table 1 (p. 2610), life satisfaction column, row "Anti-democratic attitudes × level of democracy": b = -0.23, SE = 0.08, p = .002, 95% CI [-0.38, -0.09].
 
@@ -18,11 +18,20 @@ Follows the COS preregistration template section by section. Copy into the COS d
 
 ## 2. Data
 
-**Data source.** Joint EVS/WVS 2017 to 2021, GESIS ZA7505 v2.0.0 (doi 10.4232/1.13737), accessed TODO. V-Dem Country-Year v11.1 (doi 10.23696/vdemds21), accessed TODO, supplying both the electoral and the liberal index. World Bank WDI and WGI, release TODO, accessed TODO. ZA7505 v2.0.0 and V-Dem v11.1 are the releases the author cites.
+**Data source.** Joint EVS/WVS 2017 to 2021, GESIS ZA7505 v2.0.0 (doi 10.4232/1.13737). V-Dem Country-Year v11.1 (doi 10.23696/vdemds21), supplying the Electoral Democracy Index (v2x_polyarchy) and the Liberal Democracy Index (v2x_libdem). World Bank WDI (GDP per capita, PPP), WGI (government effectiveness, political stability, control of corruption), and the World Bank income-group and region classifications, all for 2020.
+
+ZA7505 v2.0.0 and V-Dem v11.1 are the releases the author cites. Both are archived and will be used instead of the current releases. The article does not name the World Bank releases. I will use the archived 2022 WDI and WGI releases where they can be retrieved (the article was received on 28 November 2022), otherwise the current releases, and record which one was used.
+
+Access date: none of these files has been downloaded for this study yet. The file name and access date of each will be recorded at download, before any data preparation, and reported with the outcomes.
 
 **Author materials.** ☐ Yes ☒ No. No replication code or supplement is available. Only the article was consulted.
 
-**Prior work with this paper or these data.** ☒ Yes ☐ No. I have analyzed WVS and EVS data in earlier, unrelated work. TODO: name the projects. I have not worked with this paper before.
+**Prior work with this paper or these data.** ☒ Yes ☐ No. With the data sources in general, not with this paper or this data file.
+
+- WVS and EVS: I have analyzed earlier WVS and EVS data in unpublished work. I have not used the Joint EVS/WVS 2017 to 2021 file (ZA7505) before, and I have not analyzed the variables of this paper's model (the regime items, life satisfaction, or their relation to democracy).
+- V-Dem: I have used V-Dem data in earlier work unrelated to this paper.
+- European Social Survey: my published survey work uses the ESS. I worked on Serbia's participation in the ESS (2017 to 2025) and taught a workshop on statistical methods for ESS data (2019). Publications include Stanojević, D., & Tomašević, A. (2021). Housing and family trajectories of young adults in five countries: Sweden, Germany, United Kingdom, Italy and Serbia: Sequence analysis of European Social Survey data. *Sociologija*, 63(2), 262 to 288. https://doi.org/10.2298/SOC2102262S
+- This paper: I have not reproduced or otherwise worked with Prati (2023) before this robustness study, in the reproduction workflow or elsewhere.
 
 ## 3. Dimensions and statuses
 
@@ -50,7 +59,7 @@ Follows the COS preregistration template section by section. Copy into the COS d
 | Option | Original? | What it does | Why it is a reasonable choice for this question |
 | --- | --- | --- | --- |
 | orig_vdem2020 | Yes | V-Dem Electoral Democracy Index for 2020 for every country. | |
-| alt_vdem_fieldwork | No | V-Dem Electoral Democracy Index for each respondent's fieldwork year (S020), V-Dem v11.1. Version 11.1 ends in 2020, so respondents interviewed in 2021 keep the 2020 score, the latest available value, as under the original option. The affected country-years are listed in results/descriptives_vdem_carried_forward.csv. | Fieldwork spans five years. Matching the index to the survey year measures the regime respondents lived under when interviewed. |
+| alt_vdem_fieldwork | No | V-Dem Electoral Democracy Index for each respondent's fieldwork year (S020), V-Dem v11.1. Version 11.1 ends in 2020, so respondents interviewed in 2021 keep the 2020 score, the latest available value, as under the original option. The affected country-years will be listed in the outcome report. | Fieldwork spans 2017 to 2021, so a fixed 2020 score can postdate the interview by up to three years. Matching the index to the survey year measures the regime respondents lived under when interviewed. |
 | alt_vdem_libdem2020 | No | V-Dem Liberal Democracy Index (v2x_libdem) for 2020, from the same v11.1 release. | Same source and vintage as the original, full coverage of the file, and the broader construct (electoral democracy plus liberal constraints on the executive) that much of the democracy and well-being literature means by democracy. |
 
 ### a01: Anti-democratic attitudes scale composition
@@ -79,7 +88,7 @@ Follows the COS preregistration template section by section. Copy into the COS d
 | Option | Original? | What it does | Why it is a reasonable choice for this question |
 | --- | --- | --- | --- |
 | orig_mi | Yes | Multiple imputation (m = 20, 10 iterations, mice default methods: predictive mean matching for numeric variables, logistic and multinomial regression for binary and nominal factors; all individual analysis variables plus country indicators as predictors), estimates pooled with Rubin's rules. The method, m and imputation model are my reading; the article reports only that multiple imputation was used. | |
-| alt_complete_case | No | Listwise deletion of respondents missing any analysis variable. | With item missingness below 3%, complete-case analysis is a standard and widely used choice. |
+| alt_complete_case | No | Listwise deletion of respondents missing any analysis variable. | With item missingness below 3%, complete-case analysis is a standard choice, and it is the author's own robustness check (b = -0.27, SE = 0.08). |
 
 ## 5. Combinations that cannot be run
 
@@ -98,10 +107,19 @@ Follows the COS preregistration template section by section. Copy into the COS d
 
 ## 7. Notes
 
-- Decisions the article leaves open, with the baseline reading for each, are listed in `docs/focal_result.md` ("Decisions the article leaves open"). TODO: paste the table here.
-- Estimation uses maximum likelihood and an independent random-effects covariance, matching Stata `mixed` defaults.
-- A boundary (singular) fit is converged. In lme4, checkConv stores the message "boundary (singular) fit: see help('isSingular')" and returns before the gradient and Hessian checks, so that message is not an optimizer failure. The estimate is kept and singular is set to TRUE. One singular imputation does not fail the specification. Optimizer failure, including failure in any imputed dataset, sets converged to FALSE and the row has no estimate.
-- For alt_vdem_fieldwork, respondents with 2021 fieldwork keep the 2020 V-Dem score. R/04_build_analytic.R writes the affected country-years to results/descriptives_vdem_carried_forward.csv. The joint file is not in data/raw yet, so that list is filled at data preparation.
-- The article's "perceptions of corruption" is operationalized as the World Bank WGI Control of Corruption estimate.
-- The robustness paragraph (p. 2613) reports a second complete-case estimate labelled life satisfaction that matches the happiness model; this looks like a typo and does not affect the focal result.
-- No model was fitted before this plan was written. Before submission, only data preparation and descriptives were run (sample size, number of countries, item missingness, scale reliability). TODO: report those descriptives here, next to the article's N = 131,846 and 78 countries.
+- Code: https://github.com/atomashevic/cos-robustness-ibyr. The run scripts refuse to fit any model until the registration is recorded in config/specifications.yaml.
+- No model has been fitted, and no data have been downloaded or prepared for this study. The baseline takes the original option on every varied dimension; any gap between the baseline and Table 1 will be reported as a result.
+- Decisions the article leaves open, with the baseline reading of each:
+  - Scoring the moderator: the article says “latent variable” and reports omega. Baseline: factor scores (regression method) from a pooled one-factor CFA on the three reversed items. A unit-weighted mean is the other reading.
+  - Missingness: the article writes “>3%” in a sentence describing missingness as low overall. Read as below 3%.
+  - Imputation method, m and model: not reported. Baseline as described under d02.
+  - “Don't know” answers on the regime items: not reported. Treated as missing and imputed.
+  - Estimation: Stata 17 mixed. Baseline: maximum likelihood and an independent random-effects covariance, the Stata defaults.
+  - GDP per capita: the article does not mention a log. Entered unlogged, in USD 10,000.
+  - Year of the country controls: not reported. Baseline: 2020, matching the V-Dem year.
+  - “Perceptions of corruption”: operationalized as the WGI Control of Corruption estimate, since it sits with two other WGI indicators.
+  - Education, marital status and employment status: coding not reported. Joint-file categories as supplied, entered as factors.
+  - Age: not reported. Continuous, linear.
+- Convergence: a boundary (singular) fit counts as converged. The estimate is kept and flagged as singular, and one singular imputation does not fail a specification. An optimizer failure, including one in any imputed dataset, marks the specification as not converged, with no estimate.
+- The robustness paragraph (p. 2613) gives a second complete-case estimate labelled life satisfaction (b = -0.08, SE = 0.02) that matches the happiness model. It looks like a typo and does not affect the focal result. The happiness model is not part of this study.
+- A correction to the article (doi 10.1007/s11482-023-10216-6) changed only the format of the abstract.

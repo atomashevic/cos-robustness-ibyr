@@ -1,7 +1,7 @@
 # Bounded multiverse for IBYR.
 # Exactly one option per dimension is the original (orig_ prefix).
 # The combination of all orig_ options is the baseline specification.
-# Frozen after OSF registration (see CLAUDE.md, rule 6; R/06_fit_spec.R is frozen with it).
+# Frozen after OSF registration (see README.md, rule 6; R/06_fit_spec.R is frozen with it).
 
 paper_id: IBYR
 

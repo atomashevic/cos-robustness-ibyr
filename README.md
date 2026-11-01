@@ -2,7 +2,7 @@
 
 Bounded multiverse robustness analysis of one published result, for the Center for Open Science Replicability Project: Health Behavior (RP:HB). Paper ID **IBYR**. Analyst: Aleksandar Tomašević.
 
-**Outcome report due: December 1, 2026** (to replications@cos.io, subject `[IBYR] Outcome Reproducibility Report`).
+**Outcome report due: December 1, 2026** (to replications@cos.io, subject `[IBYR] Robustness Analysis Report`, .pdf or .docx, with all outputs).
 
 ## The focal result
 
@@ -20,12 +20,13 @@ Full description of the reported pipeline, with page references and ambiguities:
 
 | Step | Status |
 | --- | --- |
-| Proposal sent to COS | not yet ([`docs/proposal.md`](docs/proposal.md)) |
-| Proposal accepted | |
+| Proposal sent to COS | 2026-10-12 ([`docs/proposal.md`](docs/proposal.md)) |
+| Proposal accepted | 2026-10-22 |
+| Preregistration sent to COS | ([`docs/preregistration_draft.md`](docs/preregistration_draft.md)) |
+| Preregistration reviewed and approved | |
 | Data downloaded | not yet ([`docs/data_sources.md`](docs/data_sources.md)) |
 | Variable names verified against codebooks | not yet ([`config/variables.yaml`](config/variables.yaml)) |
 | Data prepared, descriptives only (N, countries, missingness, omega) | |
-| Preregistration draft reviewed and approved | draft in [`docs/preregistration_draft.md`](docs/preregistration_draft.md) |
 | Registered on OSF | |
 | Baseline run and compared to Table 1 | blocked until registration |
 | 48 specifications run | blocked until registration |
@@ -82,7 +83,15 @@ The two run scripts refuse to fit models until `registration.registered` is set 
 
 ## Rules
 
-Working rules for this repository (including for AI assistants) are in [`CLAUDE.md`](CLAUDE.md). `AGENTS.md` points other agents there. The current task for a coding agent is in [`docs/CURSOR_HANDOFF.md`](docs/CURSOR_HANDOFF.md). The short version: raw data never enters git, variable names come from codebooks, no model is fitted before registration, and the plan is frozen once registered.
+1. **Raw data never enters git.** `data/` contents stay gitignored. Reports show aggregates only.
+2. **Variable names come from codebooks, not memory.** Every entry in `config/variables.yaml` cites the codebook it was checked against. Entries marked `verified: false` are unverified.
+3. **Rebuild from source.** Start from the raw Joint EVS/WVS file and the raw country sources, never from an analytic file supplied by anyone else.
+4. **No model fits before registration.** Until `registration.registered` is true in `config/specifications.yaml`, only data preparation and descriptives are allowed (N, countries, missingness, scale reliability). The run scripts enforce this.
+5. **Do not tune the baseline toward Table 1.** The gap between the rebuilt baseline and the published values is reported as a result. Only genuine errors in our own code are fixed, and each fix is logged in `reports/claims.md`.
+6. **The plan freezes at registration.** After the OSF registration, `config/specifications.yaml` and `R/06_fit_spec.R` change only to fix bugs. Every deviation is logged, with its reason, in `reports/deviations.md`.
+7. **Failed fits stay in the results file.** A specification whose model did not converge gets `converged = FALSE`, a reason, and no estimate.
+8. **N is the number the model used**, after exclusions and missing data, never the number of rows in the file.
+9. **Claims ledger.** Every number intended for the outcome report goes into `reports/claims.md` with the script that produced it.
 
 ## COS materials
 
@@ -90,4 +99,4 @@ Working rules for this repository (including for AI assistants) are in [`CLAUDE.
 - [Robustness guidance](https://docs.google.com/document/d/1RjIzIAmEXCGIkvEmMEa9koS83FxrdS_ypo7SrfOvswI/edit)
 - [Preregistration template](https://docs.google.com/document/d/1yloKFe6tlZWGZpyErpeEB2bcLXU7y3qw/edit)
 - [Study sourcing sheet](https://docs.google.com/spreadsheets/d/1DFkniOWdYj6mc-j4Y52VeI_FGiPN9F452pSSAMbSI_s/edit)
-- Outcome reporting template: the link in the guidelines returns "not found"; request it from COS.
+- [Outcome reporting template](https://docs.google.com/document/d/1I1o98He_nPTKaU_J1A9Hc5XRiYOTGyZS/edit)

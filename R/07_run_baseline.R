@@ -27,4 +27,4 @@ comparison$difference <- comparison$rebuilt - comparison$published
 ensure_dir(paths$results)
 write.csv(comparison, file.path(paths$results, "baseline_comparison.csv"), row.names = FALSE)
 print(comparison, row.names = FALSE)
-cat("\nReport the gap as a result. Do not adjust the pipeline to close it (CLAUDE.md, rule 5).\n")
+cat("\nReport the gap as a result. Do not adjust the pipeline to close it (README.md, rule 5).\n")

@@ -3,7 +3,7 @@
 #
 # Every entry is UNVERIFIED (verified: false) until checked against the codebook.
 # When you verify an entry, set verified: true and fill `source` with the codebook
-# document and page or variable label. Do not take names from memory (CLAUDE.md, rule 2).
+# document and page or variable label. Do not take names from memory (README.md, rule 2).
 #
 # Missing-value codes in the joint file are negative (-1 don't know, -2 no answer,
 # -4 not asked, -5 missing). Verify this list in the codebook too.
