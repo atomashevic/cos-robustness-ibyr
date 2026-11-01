@@ -26,3 +26,11 @@ results/fits/
 # Local notes and article PDFs (copyrighted)
 *.pdf
 scratch/
+
+# Local agent instructions (kept out of the public repository)
+CLAUDE.md
+AGENTS.md
+docs/CURSOR_HANDOFF.md
+
+# Submission copies of the preregistration
+*.docx

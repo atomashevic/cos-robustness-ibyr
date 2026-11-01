@@ -62,7 +62,7 @@ Each gets a baseline reading. The reading and its basis go into the preregistrat
 | Imputation method, m, model | not reported | mice default methods (pmm for numeric, logreg and polyreg for factors), m = 20, all individual analysis variables plus country indicators | Common default; country indicators keep the clustering in the imputation model |
 | "Don't know" on regime items | not reported | Treated as missing and imputed | Follows from multiple imputation of item nonresponse |
 | Estimation | Stata 17 `mixed` | Maximum likelihood (Stata default), independent random-effects covariance (Stata default) | Software defaults |
-| GDP per capita | "GDP at PPP per capita" | Not logged, in USD 10,000 | Article does not mention a log |
+| GDP per capita | "GDP at PPP per capita" | WDI NY.GDP.PCAP.PP.KD (constant 2017 international $), not logged, in units of 10,000 | Article mentions neither a log nor constant or current prices |
 | Year of country controls | not reported | 2020, matching the V-Dem year | Only year named in the article |
 | Corruption source | "perceptions of corruption" | World Bank WGI Control of Corruption | Sits with two other WGI indicators named with WGI labels |
 | Education, marital status, employment coding | not reported | Joint-file categories as supplied, entered as factors | No recoding described |
