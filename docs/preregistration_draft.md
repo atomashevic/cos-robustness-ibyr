@@ -6,7 +6,7 @@ Follows the COS preregistration template section by section. This is the text of
 
 | | |
 | --- | --- |
-| Analyst | Aleksandar Tomašević, Institute of Physics Belgrade |
+| Analyst | Aleksandar Tomašević, University of Belgrade, Institute of Physics Belgrade |
 | Paper ID | IBYR. Prati, G. (2023). Applied Research in Quality of Life, 18, 2605 to 2618. https://doi.org/10.1007/s11482-023-10200-0 |
 | Date | 1 November 2026 |
 
